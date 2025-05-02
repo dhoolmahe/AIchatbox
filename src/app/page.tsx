@@ -1,89 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 
-export default function ChatPage() {
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>(
-    []
-  );
-  const [loading, setLoading] = useState(false);
+const ChatComponent = () => {
+  const [message, setMessage] = useState("");
+  const [response, setResponse] = useState("");
+  const [model, setModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1"); // default model
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
+  const models = [
+    { value: "mistralai/Mixtral-8x7B-Instruct-v0.1", label: "Mixtral-8x7B" },
+    { value: "meta-llama/Llama-3-8B-Instruct", label: "LLaMA-3" },
+    { value: "openai/gpt-3.5-turbo", label: "GPT-3.5 Turbo" }, // Optional if you want GPT
+  ];
 
-    // Add user message
-    const newMessages = [...messages, { role: "user", content: input }];
-    setMessages(newMessages);
-    setInput("");
-    setLoading(true);
+  const handleSubmit = async () => {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, model }),
+    });
 
-    try {
-      // Call our API route
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch response from the server.");
-      }
-
-      const data = await res.json();
-      const reply = data.reply || "Sorry, I couldn't understand that.";
-      setMessages([...newMessages, { role: "assistant", content: reply }]);
-    } catch (error) {
-      console.error("Error:", error);
-      setMessages([
-        ...newMessages,
-        {
-          role: "assistant",
-          content: "Sorry, something went wrong. Please try again.",
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
+    const data = await res.json();
+    setResponse(data.reply);
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>💬 AI Chat</h2>
-      <div style={{ marginBottom: 10 }}>
-        {messages.map((msg, i) => (
-          <div key={i} style={{ marginBottom: 5 }}>
-            <strong>{msg.role === "user" ? "You" : "AI"}:</strong> {msg.content}
-          </div>
-        ))}
-      </div>
-      <input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Ask something..."
-        onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-        style={{
-          width: "70%",
-          padding: "8px",
-          marginBottom: "10px",
-          border: "1px solid #ccc",
-          borderRadius: "4px",
-        }}
+    <div>
+      <h1>AI Chat</h1>
+      <textarea
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Ask me anything..."
       />
-      <button
-        onClick={sendMessage}
-        disabled={loading || !input.trim()}
-        style={{
-          marginLeft: 10,
-          padding: "8px",
-          backgroundColor: loading || !input.trim() ? "#ccc" : "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: loading || !input.trim() ? "not-allowed" : "pointer",
-        }}>
-        {loading ? "Sending..." : "Send"}
-      </button>
+
+      {/* Dropdown to select model */}
+      <select value={model} onChange={(e) => setModel(e.target.value)}>
+        {models.map((m) => (
+          <option key={m.value} value={m.value}>
+            {m.label}
+          </option>
+        ))}
+      </select>
+
+      <button onClick={handleSubmit}>Send</button>
+
+      <div>
+        <h3>Response:</h3>
+        <p>{response}</p>
+      </div>
     </div>
   );
-}
+};
+
+export default ChatComponent;
