@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+const OPENROUTER_API_KEY = process.env.OPENAI_API_KEY; // assuming you're using same env var
+const BASE_URL = "https://openrouter.ai/api/v1/chat/completions";
+
 export async function POST(req: NextRequest) {
   const { message } = await req.json();
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch(BASE_URL, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "Content-Type": "application/json",
+      "HTTP-Referer": "https://maheaichatbox.vercel.app/", // 👈 required for OpenRouter
     },
     body: JSON.stringify({
-      model: "gpt-3.5-turbo",
+      model: "openrouter/openai/gpt-3.5-turbo", // 👈 use supported model
       messages: [{ role: "user", content: message }],
     }),
   });
