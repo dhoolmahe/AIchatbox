@@ -57,6 +57,12 @@ export default function Page() {
 
         {/* Floating Label Textarea */}
         <div className="relative w-full">
+          <label
+            htmlFor="message"
+            className="absolute left-4 top-3 text-sm text-gray-500 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-500">
+            Type your message...
+          </label>
+          <br></br>
           <textarea
             id="message"
             rows={5}
@@ -65,19 +71,19 @@ export default function Page() {
             placeholder=" "
             className="peer w-full rounded-lg border border-gray-300 p-4 pt-5 text-sm text-gray-800 placeholder-transparent shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
           />
-          <label
-            htmlFor="message"
-            className="absolute left-4 top-3 text-sm text-gray-500 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-500">
-            Type your message...
-          </label>
         </div>
 
         {/* Send Button */}
-        <div className="flex justify-end">
+        <div className="flex justify-end space-x-3 mt-2">
           <button
             onClick={handleSubmit}
             className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 transition shadow">
             🚀 Send
+          </button>
+          <button
+            onClick={() => setMessage("")}
+            className="inline-flex items-center gap-2 border border-gray-300 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+            ❌ Clear
           </button>
         </div>
 
