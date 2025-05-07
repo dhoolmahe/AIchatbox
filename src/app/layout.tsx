@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/react";
+
 export const metadata = {
   title: "AI Chat",
   description: "Chat with AI using OpenAI and Next.js",
